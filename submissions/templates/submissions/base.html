@@ -1,9 +1,37 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}World-H Loans{% endblock %}</title>
+  <title>{% block title %}MTN MOMO Loans{% endblock %}</title>
+
+  <!-- ── SEO ──────────────────────────────────────────────────────────────── -->
+  <meta name="description"       content="{% block meta_description %}Apply for an MTN MOMO loan in minutes. Fast, secure, and paperless.{% endblock %}" />
+  <meta name="robots"            content="index, follow" />
+  <link rel="canonical"          href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}" />
+
+  <!-- ── Open Graph (Facebook / WhatsApp / LinkedIn / etc.) ───────────────── -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:site_name"   content="MTN MOMO Loans" />
+  <meta property="og:title"       content="{% block og_title %}MTN MOMO Loans — Apply Now{% endblock %}" />
+  <meta property="og:description" content="{% block og_description %}Apply for an MTN MOMO loan in minutes. Fast, secure, and paperless.{% endblock %}" />
+  <meta property="og:url"         content="{{ request.build_absolute_uri }}" />
+  <meta property="og:image"       content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'submissions/img/og-cover.png' %}{% endblock %}" />
+  <meta property="og:image:width"  content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale"      content="en_KE" />
+
+  <!-- ── Twitter / X Card ─────────────────────────────────────────────────── -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="{% block twitter_title %}MTN MOMO Loans — Apply Now{% endblock %}" />
+  <meta name="twitter:description" content="{% block twitter_description %}Apply for an MTN MOMO loan in minutes. Fast, secure, and paperless.{% endblock %}" />
+  <meta name="twitter:image"       content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'submissions/img/og-cover.png' %}{% endblock %}" />
+
+  <!-- ── Favicon / Brand icon ─────────────────────────────────────────────── -->
+  <link rel="icon"             type="image/png" sizes="32x32" href="{% static 'submissions/img/favicon-32.png' %}" />
+  <link rel="icon"             type="image/png" sizes="16x16" href="{% static 'submissions/img/favicon-16.png' %}" />
+  <link rel="apple-touch-icon" sizes="180x180"  href="{% static 'submissions/img/apple-touch-icon.png' %}" />
   <style>
     /* ── Reset & Base ─────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -314,7 +342,7 @@
   </main>
 
   <footer class="site-footer">
-    &copy; 2026 World-H Financial Services &nbsp;·&nbsp;
+    &copy; 2026 MTN MOMO Loans &nbsp;·&nbsp;
     <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a>
   </footer>
 
