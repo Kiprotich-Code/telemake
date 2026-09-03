@@ -1,0 +1,6 @@
+Django==5.0.6
+psycopg[binary]==3.1.19
+requests==2.32.3
+python-dotenv==1.0.1
+dj-database-url==2.2.0
+hypothesis==6.112.2

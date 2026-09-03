@@ -1,0 +1,74 @@
+{% extends "submissions/base.html" %}
+
+{% block title %}Application Received — World-H{% endblock %}
+
+{% block extra_head %}
+<style>
+  .success-icon {
+    width: 56px;
+    height: 56px;
+    background: #edfaf3;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  .success-divider {
+    height: 1px;
+    background: var(--color-border);
+    margin: 28px 0;
+  }
+  .info-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--color-muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .info-row svg { flex-shrink: 0; margin-top: 1px; }
+  .info-row strong { color: var(--color-text); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+
+  <div class="success-icon">
+    <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+      <path d="M5 13.5L10.5 19L21 8" stroke="#1a9c5b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <p class="card__eyebrow">Application submitted</p>
+  <h1 class="card__title">You're all set</h1>
+  <p class="card__subtitle">
+    Your loan application has been received and is under review. We'll be in touch shortly.
+  </p>
+
+  <div class="success-divider"></div>
+
+  <div class="info-row">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6.5" stroke="#697386" stroke-width="1.4"/>
+      <path d="M8 5.5V8l2 1.5" stroke="#697386" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <span>Review typically takes <strong>1–2 business days</strong>.</span>
+  </div>
+
+  <div class="info-row">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M3 4h10a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z" stroke="#697386" stroke-width="1.4"/>
+      <path d="M2 5l6 4.5L14 5" stroke="#697386" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <span>A confirmation will be sent to your registered contact.</span>
+  </div>
+
+  <a href="{% url 'submissions:submit' %}" class="btn btn--primary" style="margin-top:32px;">
+    Start a new application
+  </a>
+
+</div>
+{% endblock %}

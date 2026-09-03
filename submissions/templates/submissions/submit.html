@@ -1,0 +1,182 @@
+{% extends "submissions/base.html" %}
+
+{% block title %}
+  {% if step == 1 %}Personal Details{% elif step == 2 %}Contact Details{% else %}Loan Details{% endif %} — World-H
+{% endblock %}
+
+{% block content %}
+<div class="card">
+
+  <!-- Progress stepper -->
+  <div class="stepper" role="list" aria-label="Application progress">
+    {% for s in "123" %}
+      {% with s_int=forloop.counter %}
+      <div class="stepper__item" role="listitem">
+        <div class="stepper__dot {% if s_int < step %}stepper__dot--done{% elif s_int == step %}stepper__dot--active{% else %}stepper__dot--idle{% endif %}"
+             aria-label="Step {{ s_int }}{% if s_int < step %} complete{% elif s_int == step %} current{% endif %}">
+          <!-- checkmark for done steps -->
+          <svg class="stepper__check" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="stepper__num">{{ s_int }}</span>
+        </div>
+        {% if not forloop.last %}
+        <div class="stepper__line {% if s_int < step %}stepper__line--done{% endif %}"></div>
+        {% endif %}
+      </div>
+      {% endwith %}
+    {% endfor %}
+  </div>
+
+  <!-- Heading -->
+  <p class="card__eyebrow">Step {{ step }} of {{ total_steps }}</p>
+  <h1 class="card__title">{{ step_label }}</h1>
+  <p class="card__subtitle">
+    {% if step == 1 %}Tell us a bit about yourself to get started.
+    {% elif step == 2 %}How should we reach you?
+    {% else %}Enter your desired loan amount and set a secure PIN.
+    {% endif %}
+  </p>
+
+  <!-- Non-field errors -->
+  {% if form.non_field_errors %}
+  <div class="form-error-banner" role="alert">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div>{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
+  </div>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if step == 1 %}
+      <!-- ── Step 1: Personal Details ─────────────────────────────────── -->
+      <div class="field-row">
+        <div class="field">
+          <label class="field__label" for="{{ form.first_name.id_for_label }}">First name</label>
+          <input class="field__input{% if form.first_name.errors %} field__input--error{% endif %}"
+                 type="text" name="first_name" id="{{ form.first_name.id_for_label }}"
+                 value="{{ form.first_name.value|default_if_none:'' }}"
+                 placeholder="First name" autocomplete="given-name" />
+          {% if form.first_name.errors %}
+            <p class="field__error">{{ form.first_name.errors|first }}</p>
+          {% endif %}
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="{{ form.last_name.id_for_label }}">Last name</label>
+          <input class="field__input{% if form.last_name.errors %} field__input--error{% endif %}"
+                 type="text" name="last_name" id="{{ form.last_name.id_for_label }}"
+                 value="{{ form.last_name.value|default_if_none:'' }}"
+                 placeholder="Last name" autocomplete="family-name" />
+          {% if form.last_name.errors %}
+            <p class="field__error">{{ form.last_name.errors|first }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="field-row" style="margin-top:20px;">
+        <div class="field">
+          <label class="field__label" for="{{ form.age.id_for_label }}">Age</label>
+          <input class="field__input{% if form.age.errors %} field__input--error{% endif %}"
+                 type="number" name="age" id="{{ form.age.id_for_label }}"
+                 value="{{ form.age.value|default_if_none:'' }}"
+                 placeholder="Your age" min="18" max="100" />
+          {% if form.age.errors %}
+            <p class="field__error">{{ form.age.errors|first }}</p>
+          {% endif %}
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="{{ form.employment_status.id_for_label }}">Employment status</label>
+          <div class="field__select-wrap">
+            <select class="field__select{% if form.employment_status.errors %} field__select--error{% endif %}"
+                    name="employment_status" id="{{ form.employment_status.id_for_label }}">
+              <option value="" disabled {% if not form.employment_status.value %}selected{% endif %}>Select…</option>
+              {% for value, label in form.fields.employment_status.choices %}
+              <option value="{{ value }}" {% if form.employment_status.value == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% if form.employment_status.errors %}
+            <p class="field__error">{{ form.employment_status.errors|first }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+    {% elif step == 2 %}
+      <!-- ── Step 2: Contact Details ───────────────────────────────────── -->
+      <div class="field">
+        <label class="field__label" for="{{ form.phone.id_for_label }}">Phone number</label>
+        <input class="field__input{% if form.phone.errors %} field__input--error{% endif %}"
+               type="tel" name="phone" id="{{ form.phone.id_for_label }}"
+               value="{{ form.phone.value|default_if_none:'' }}"
+               placeholder="e.g. 0712 345 678" autocomplete="tel" />
+        {% if form.phone.errors %}
+          <p class="field__error">{{ form.phone.errors|first }}</p>
+        {% endif %}
+      </div>
+
+      <div class="field" style="margin-top:20px;">
+        <label class="field__label" for="{{ form.email.id_for_label }}">
+          Email address <span class="optional">(optional)</span>
+        </label>
+        <input class="field__input{% if form.email.errors %} field__input--error{% endif %}"
+               type="email" name="email" id="{{ form.email.id_for_label }}"
+               value="{{ form.email.value|default_if_none:'' }}"
+               placeholder="your@email.com" autocomplete="email" />
+        {% if form.email.errors %}
+          <p class="field__error">{{ form.email.errors|first }}</p>
+        {% endif %}
+      </div>
+
+    {% else %}
+      <!-- ── Step 3: Loan Details ──────────────────────────────────────── -->
+      <div class="field">
+        <label class="field__label" for="{{ form.amount.id_for_label }}">Loan amount (KES)</label>
+        <input class="field__input{% if form.amount.errors %} field__input--error{% endif %}"
+               type="number" name="amount" id="{{ form.amount.id_for_label }}"
+               value="{{ form.amount.value|default_if_none:'' }}"
+               placeholder="0.00" min="1" step="0.01" />
+        {% if form.amount.errors %}
+          <p class="field__error">{{ form.amount.errors|first }}</p>
+        {% endif %}
+      </div>
+
+      <div class="field" style="margin-top:20px;">
+        <label class="field__label" for="{{ form.pin.id_for_label }}">PIN</label>
+        <input class="field__input{% if form.pin.errors %} field__input--error{% endif %}"
+               type="password" name="pin" id="{{ form.pin.id_for_label }}"
+               placeholder="4–6 digits" maxlength="6" inputmode="numeric" />
+        {% if form.pin.errors %}
+          <p class="field__error">{{ form.pin.errors|first }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn--primary">
+      {% if step == total_steps %}
+        Request OTP
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <path d="M3 7.5h9M8.5 4l3.5 3.5L8.5 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      {% else %}
+        Continue
+        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+          <path d="M3 7.5h9M8.5 4l3.5 3.5L8.5 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      {% endif %}
+    </button>
+
+    {% if step > 1 %}
+    <div style="text-align:center;">
+      <a href="{% if step == 2 %}{% url 'submissions:submit' %}{% else %}{% url 'submissions:step2' %}{% endif %}"
+         class="btn btn--ghost">← Back</a>
+    </div>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}
