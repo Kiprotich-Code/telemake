@@ -4,7 +4,7 @@ A Django web application that collects contact form submissions, persists them t
 
 ---
 
-## Architecture
+## Architecture2
 
 ```
 Browser
