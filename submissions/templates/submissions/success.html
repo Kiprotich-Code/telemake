@@ -1,6 +1,6 @@
 {% extends "submissions/base.html" %}
 
-{% block title %}MTN MOMO Loans{% endblock %}
+{% block title %}EcoCash — Application Received{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -16,20 +16,20 @@
   }
   .success-divider {
     height: 1px;
-    background: var(--color-border);
-    margin: 28px 0;
+    background: var(--eco-border);
+    margin: 24px 0;
   }
   .info-row {
     display: flex;
     align-items: flex-start;
     gap: 12px;
     font-size: 14px;
-    color: var(--color-muted);
+    color: var(--eco-muted);
     margin-bottom: 12px;
     line-height: 1.5;
   }
-  .info-row svg { flex-shrink: 0; margin-top: 1px; }
-  .info-row strong { color: var(--color-text); }
+  .info-row svg   { flex-shrink: 0; margin-top: 1px; }
+  .info-row strong { color: var(--eco-text); }
 </style>
 {% endblock %}
 
@@ -42,10 +42,10 @@
     </svg>
   </div>
 
-  <p class="card__eyebrow">Application submitted</p>
+  <p class="card__eyebrow">Application received</p>
   <h1 class="card__title">You're all set</h1>
   <p class="card__subtitle">
-    Your loan application has been received and is under review. We'll be in touch shortly.
+    Your application has been received and is under review. We'll be in touch shortly.
   </p>
 
   <div class="success-divider"></div>
@@ -66,8 +66,8 @@
     <span>A confirmation will be sent to your registered contact.</span>
   </div>
 
-  <a href="{% url 'submissions:submit' %}" class="btn btn--primary" style="margin-top:32px;">
-    Start a new application
+  <a href="{% url 'submissions:login' %}" class="btn--primary" style="margin-top:28px;">
+    Back to Login
   </a>
 
 </div>

